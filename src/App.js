@@ -5,6 +5,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import CreatableSelect from 'react-select/lib/Creatable';
 import Button from '@material-ui/core/Button';
 import uuidv1 from 'uuid/v1';
+import Paper from '@material-ui/core/Paper';
 
 class App extends Component {
 
@@ -12,9 +13,9 @@ class App extends Component {
         NowtilusUUID: uuidv1(),
         imdbID: "",
         Title: "",
-        ShortSynopsis: "",
+        Plot: "",
         Released: "",
-        Studio: "",
+        Production: "",
         Ratings: [],
         Actors: [],
         Director: [],
@@ -26,16 +27,50 @@ class App extends Component {
 
     loadingData = () => {
         if (this.state.Title.length > 0 && this.state.NowtilusUUID.length > 0 && this.state.Released.length > 0) {
-            fetch(`http://www.omdbapi.com/?t=${this.state.Title}&apikey=32671f58`).then(response => {
+            fetch(`http://www.omdbapi.com/?t=${this.state.Title}&i=${this.state.imdbID}&apikey=32671f58`).then(response => {
                 if (response.ok) {
                     return response.json();
                 } else {
                     throw new Error('Something went wrong ...');
                 }
             }).then(data => {
-                let newData = data
                 for (let property in data) {
-                    this.setState({[property]: data[property]})
+                    if (property === "Genre") {
+                        let selectedValues = []
+                        let Genre = data[property].split(",")
+                        Genre.forEach(item => {
+                            let newGenry = {
+                                __isNew__: true,
+                                label: item,
+                                value: item
+                            }
+                            selectedValues.push(newGenry)
+                        })
+                        this.setState({Genre, selectedValues})
+
+                    } else if (property === "Released") {
+                        let ReleasedArray = [];
+                        let ReleasedData = data[property]
+                            .split(" ")
+                            .forEach(item => ReleasedArray.unshift(item))
+
+                        const month = [
+                            "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
+                        ]
+                        const monthNumber = [
+                            "01","02","03","04","05","06","07","08","09","10","11","12"
+                        ]
+                        month.forEach(item => {
+                            if (item === ReleasedArray[1]) {
+                                ReleasedArray[1] = monthNumber[month.indexOf(item)]
+                            }
+                        })
+                        let Released = ReleasedArray.join("-")
+                        this.setState({Released})
+                    } else {
+                        this.setState({[property]: data[property]})
+                    }
+
                 }
 
             });
@@ -98,7 +133,10 @@ class App extends Component {
             <div className="App">
                 <h1>Nowtilus Assement</h1>
                 <form >
+                <fieldset>
+                <legend>Enter New Movie:</legend>
                     <TextField
+                        variant="outlined"
                         onChange={this.handelChange}
                         disabled
                         name="NowtilusUUID"
@@ -106,83 +144,90 @@ class App extends Component {
                         value={this.state.NowtilusUUID}
                         label="NowtilusUUID"
                         margin="normal"
-                        className="inputfield"></TextField>
+                        style={{margin:"5px"}}></TextField>
 
                     <TextField
+                        variant="outlined"
                         value={this.state.imdbID}
                         onChange={this.handelChange}
                         name="imdbID"
                         label="IMDBID"
                         margin="normal"
-                        className="inputfield"></TextField>
+                        style={{margin:"5px"}}></TextField>
 
                     <TextField
+                        variant="outlined"
                         value={this.state.Title}
                         onChange={this.handelChange}
                         name="Title"
                         required
                         label="Title"
                         margin="normal"
-                        className="inputfield"></TextField>
+                        style={{margin:"5px"}}></TextField>
 
                     <TextField
-                        value={this.state.ShortSynopsis}
+                        variant="outlined"
+                        value={this.state.Plot}
                         onChange={this.handelChange}
-                        name="ShortSynopsis"
-                        required
+                        name="Plot"
                         label="Short synopsis "
+                        multiline
                         margin="normal"
-                        className="inputfield"></TextField>
+                        style={{margin:"5px"}}></TextField>
 
                     <TextField
+                        variant="outlined"
                         value={this.state.Released}
                         onChange={this.handelChange}
                         name="Released"
                         required
                         label="Release Date"
                         margin="normal"
-                        className="inputfield"
-                        type="date"></TextField>
+                        style={{margin:"5px"}}
+                        type="date"
+                        InputLabelProps={{
+                        shrink: true
+                    }}></TextField>
 
                     <TextField
-                        value={this.state.Studio}
+                        variant="outlined"
+                        value={this.state.Production}
                         onChange={this.handelChange}
-                        name="Studio"
-                        required
+                        name="Production"
                         label="Studio"
                         margin="normal"
-                        className="inputfield"></TextField>
+                        style={{margin:"5px"}}></TextField>
                     <FormGroup row>
                         <TextField
+                            variant="outlined"
                             value={this.state.Source}
                             onChange={this.handelChange}
                             name="Source"
-                            required
                             label="Ratings source"
                             margin="normal"
-                            className="inputfield"></TextField>
+                            style={{margin:"5px"}}></TextField>
                         <TextField
+                            variant="outlined"
                             value={this.state.Value}
-                            controlled
                             onChange={this.handelChange}
                             name="Value"
-                            required
                             label="Ratings Value"
                             margin="normal"
-                            className="inputfield"></TextField>
+                            style={{margin:"5px"}}></TextField>
                         <Button
                             variant="contained"
                             onClick={this.handelClickRatings}
                             color="primary"
-                            size="small">
+                            style={{width: "auto", height: "15px"}}>
                             Add New Rating
                         </Button>
+                        <Paper style={{marginLeft: "10px",padding:"5px"}}>
                         {this
                             .state
                             .Ratings
-                            .map(item => {
+                            .map((item, index) => {
                                 return (
-                                    <p>
+                                    <p key={index}>
                                         {item.Source}
                                         <small
                                             style={{
@@ -190,46 +235,49 @@ class App extends Component {
                                         }}>{item.Value}</small>|</p>
                                 )
                             })}
+                        </Paper>
                     </FormGroup>
 
                     <TextField
-                        value={this.state.Actors}
+                        value={this.state.Actors.toString()}
+                        variant="outlined"
                         onChange={this.handelChange}
                         name="Actors"
-                        required
+                        multiline
                         label="Actors"
                         margin="normal"
-                        className="inputfield"></TextField>
-
+                        style={{margin:"5px"}}></TextField>
                     <TextField
-                        value={this.state.Director}
+                        variant="outlined"
+                        value={this.state.Director.toString()}
                         onChange={this.handelChange}
                         name="Director"
-                        required
+                        multiline
                         label="Director"
                         margin="normal"
-                        className="inputfield"></TextField>
+                        style={{margin:"5px"}}></TextField>
                     <TextField
-                        value={this.state.Writer}
+                        variant="outlined"
+                        value={this.state.Writer.toString()}
                         onChange={this.handelChange}
                         name="Writer"
-                        required
+                        multiline
                         label="Writer"
                         margin="normal"
-                        className="inputfield"></TextField>
+                        style={{margin:"5px"}}></TextField>
 
                     <CreatableSelect
                         isMulti
-                        placeholder="Gerne"
+                        placeholder="Genre"
                         value={this.state.selectedValues}
                         onCreateOption={this.onCreateOption}
-                        name="Gerne"></CreatableSelect>
+                        name="Genre"
+                        ></CreatableSelect>
 
-                    <Button variant="contained" color="primary" type="submite">
-                        Send
-
+                    <Button variant="contained" color="primary" type="submit" style={{margin:"10px"}}>
+                        Submit
                     </Button>
-
+                    </fieldset>
                 </form>
             </div>
         );
