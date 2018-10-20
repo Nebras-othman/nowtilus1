@@ -96,6 +96,10 @@ class App extends Component {
                     value="312"
                     defaultValue="HI"></TextField>
 
+                <CreatableSelect
+                 isMulti
+                 placeholder="Gerne"></CreatableSelect>
+
             </div>
         );
     }
