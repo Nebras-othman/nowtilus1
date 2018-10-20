@@ -33,7 +33,11 @@ class App extends Component {
                     throw new Error('Something went wrong ...');
                 }
             }).then(data => {
-                
+                let newData = data
+                for (let property in data) {
+                    this.setState({[property]: data[property]})
+                }
+
             });
 
         }
