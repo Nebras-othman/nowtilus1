@@ -22,7 +22,8 @@ class App extends Component {
         Writer: [],
         Genre: [],
         selectedValues: [],
-        loadedData: {}
+        loadedData: {},
+        Poster:""
     }
     /*the function responsible for fetching the data and fill or correct the data in the form */
     loadingData = () => {
@@ -138,6 +139,8 @@ class App extends Component {
                 <p>Using this Form you can fill the required fields and automatically the rest of the fields will be filled from http://www.omdbapi.com API, You can't change the data after it is fetched from the Api so there will don't be conflict. But we could implement he possibility to change the data after the fetch</p>
                 <form >
                 <fieldset>
+                    {/*Something iliked to add which is sowing the poster of the movie as background */}
+                <div style={{width:"100%",height:"100%",content: "",backgroundImage :`url(${this.state.Poster})`, opacity:" 0.2", top: "0", left: "0", bottom: "0", right:" 0", position:"absolute", zIndex: "-1" ,backgroundPosition: "center center",backgroundRepeat: "no-repeat",backgroundSize: "cover"}}> </div>
                 <legend>Enter New Movie:</legend>
                     <TextField
                         variant="outlined"
