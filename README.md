@@ -1,11 +1,11 @@
-Front end Application to enter new data and correct it with a http://www.omdbapi.com/ APi depending on the IMDB ID or title name
+Front end Application to enter new Movie data and correct it with a http://www.omdbapi.com/ APi depending on the IMDB ID or title name
 
 ## Getting started
 
 **Installation**
 1. git clone https://github.com/Nebras-othman/nowtilus1.git
-2.cd nowtilus1 
-3.npm i
+2. cd nowtilus1 
+3. npm i
 4. npm start
 
 
